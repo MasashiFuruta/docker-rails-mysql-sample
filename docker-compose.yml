@@ -1,0 +1,29 @@
+version: '3'
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: root
+    volumes:
+      - ./db/mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  rails:
+    build: ./rails
+    command: /bin/sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ./rails:/app_name
+    ports:
+      - "3000:3000"
+    links:
+      - db
+
+  react:
+    build: ./react
+    volumes:
+      - ./react/app:/react_app
+    command: /bin/sh -c "cd react_app && yarn start"
+    ports:
+      - "3001:3000"
